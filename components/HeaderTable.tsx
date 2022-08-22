@@ -1,4 +1,13 @@
-import { TableCell, TableHead, TableRow, TableSortLabel } from "@mui/material";
+import {
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
+import { useState } from "react";
+
 
 interface Data {
   chronoNumber: number;
@@ -24,7 +33,7 @@ interface HeadCell {
 
 const headCells: HeadCell[] = [
   {
-    id: "N° chrono",
+    id: "created",
     label: "N° chrono",
   },
   {
@@ -42,14 +51,14 @@ const headCells: HeadCell[] = [
   {
     id: "climate",
     label: "Bénéficiaire",
-    subsection: ["Nom", "Siren"],
+    subsection: [/*"Nom", "Siren"*/ "climate", "gravity"],
   },
   {
     id: "diameter",
     label: "CSP",
   },
   {
-    id: "population",
+    id: "edited",
     label: "Délai concerné",
   },
   {
@@ -61,15 +70,17 @@ const headCells: HeadCell[] = [
     label: "Montants",
   },
   {
-    id: "Alerte",
+    id: "population",
     label: "Alerte",
     subsection: [
-      `Liées à évolution de montant`,
-      `Liées aux fins de durée d'engagement`,
+      /*`Liées à évolution de montant`,
+      `Liées aux fins de durée d'engagement`,*/
+      "population",
+      "population",
     ],
   },
   {
-    id: "Secret",
+    id: "films",
     label: "Secret",
   },
 ];
@@ -77,87 +88,126 @@ const headCells: HeadCell[] = [
 type Order = "asc" | "desc";
 
 interface TableProps {
-  numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Data
   ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
 }
 
+
 const HeaderTable = (props: TableProps) => {
-  const { order, orderBy,onRequestSort } = props;
-    const createSortHandler =
+  const { order, orderBy, onRequestSort} = props;
+  const createSortHandler =
     (property: any) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+    const [columnToDisplay, setColumnToDisplay] = useState(() => headCells);
+    const displayHandler = (
+      event: React.MouseEvent<HTMLElement>,
+      newDisplay: HeadCell[],
+    ) => {
+      setColumnToDisplay(newDisplay);    
+    };
+
+   console.log(columnToDisplay);
+   
+
+
   return (
-    <TableHead>
-      <TableRow>
-        {headCells.map((headCell) => {
-          if (headCell.subsection) {
-            return (
-              <TableCell
-                sx={{
-                  border: "1px solid black",
-                  padding: "0",
-                }}
-                key={headCell.id}
-              >
-                <TableRow sx={{ display: "flex", justifyContent: "center" }}>
-                  {headCell.label}
-                </TableRow>
-                <TableRow
-                  sx={{
-                    display: "flex",
-                    width: "100%",
-                  }}
-                >
-                  {headCell.subsection.map((subsection, index) => {
-                    return (
-                      <TableCell
-                        sx={{
-                          border: "1px solid black",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          width: "50%",
-                          height: "100%",
-                          minHeight: "90px",
-                        }}
-                        key={index}
-                      >
-                        {subsection}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              </TableCell>
-            );
-          } else {
-            return (
-              <TableCell
-                sx={{
-                  border: "1px solid black",
-                }}
-                key={headCell.id}
-                sortDirection={orderBy === headCell.id ? order : false}
-              >
-                <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
-                onClick={createSortHandler(headCell.id)}
-                >
-                {headCell.label}
-                </TableSortLabel>
-              </TableCell>
-            );
-          }
+    <>
+      <ToggleButtonGroup
+      value={columnToDisplay}
+      onChange={displayHandler}
+      >
+        {headCells.map((cell) => {
+          
+          return (
+            <ToggleButton
+              value={cell}
+              key={cell.label}
+            >
+              {" "}
+              {cell.label}
+            </ToggleButton>
+          );
         })}
-      </TableRow>
-    </TableHead>
+      </ToggleButtonGroup>
+      <TableHead>
+        <TableRow>
+          {headCells.filter(headCell => {
+            if(columnToDisplay.includes(headCell)) return true
+            else return false
+          }).map((headCell) => {
+            if (headCell.subsection) {
+              return (
+                <TableCell
+                  sx={{
+                    border: "1px solid black",
+                    padding: "0",
+                  }}
+                  key={headCell.id}
+                >
+                  <TableRow sx={{ display: "flex", justifyContent: "center" }}>
+                    {headCell.label}
+                  </TableRow>
+                  <TableRow
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                    }}
+                  >
+                    {headCell.subsection.map((subsection, index) => {
+                      return (
+                        <TableCell
+                          sx={{
+                            border: "1px solid black",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "50%",
+                            height: "100%",
+                            minHeight: "95px",
+                          }}
+                          key={index}
+                        >
+                          <TableSortLabel
+                            active={orderBy === subsection}
+                            direction={orderBy === subsection ? order : "asc"}
+                            onClick={createSortHandler(subsection)}
+                          >
+                            {subsection}
+                          </TableSortLabel>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                </TableCell>
+              );
+            } else {
+              return (
+                <TableCell
+                  sx={{
+                    border: "1px solid black",
+                  }}
+                  key={headCell.id}
+                  sortDirection={orderBy === headCell.id ? order : false}
+                >
+                  <TableSortLabel
+                    active={orderBy === headCell.id}
+                    direction={orderBy === headCell.id ? order : "asc"}
+                    onClick={createSortHandler(headCell.id)}
+                  >
+                    {headCell.label}
+                  </TableSortLabel>
+                </TableCell>
+              );
+            }
+          })}
+        </TableRow>
+      </TableHead>
+    </>
   );
 };
 

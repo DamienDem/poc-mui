@@ -1,7 +1,6 @@
 import { TableBody, TableCell, TableRow } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
-import HeaderTable from "./HeaderTable";
 
 type Order = "asc" | "desc";
 
@@ -47,207 +46,173 @@ const getComparator = <Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy);
 };
 
+interface HeadCell {
+  id: string;
+  label: string;
+  subsection?: string[];
+}
+
 interface TableProps {
-  numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Data
   ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
+  rows: any[];
 }
 
-const fetcher = (args: string) => fetch(args).then((res) => res.json());
+const BodyTable = (props: TableProps) => {
+  const { order, orderBy,rows } = props;
 
-const BodyTable = () => {
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof Data>("name");
-  const { data, error } = useSWR("https://swapi.dev/api/planets", fetcher);
-  const [selected, setSelected] = useState<readonly string[]>([]);
-
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
-  ) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = rows.map((n: any) => n.name);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  if (error) return <div>failed to load</div>;
-  if (!data) return <div>loading...</div>;
-  const rows = data.results.map((row: any) => {
-    return row;
-  });
-  
   return (
     <>
-      <HeaderTable
-        numSelected={selected.length}
-        order={order}
-        orderBy={orderBy}
-        onSelectAllClick={handleSelectAllClick}
-        onRequestSort={handleRequestSort}
-      />
       <TableBody>
-        {rows
-          .sort(getComparator(order, orderBy))
-          .map((row: any, index: number) => {
-            const id = index;
-            return (
-              <TableRow
-                key={row.name}
+        {rows?.sort(getComparator(order, orderBy)).map((row: any) => {
+          return (
+            <TableRow
+              key={row.name}
+              sx={{
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+              }}
+            >
+              <TableCell
+                component="th"
+                id={row.created}
+                scope="row"
                 sx={{
-                  whiteSpace: "nowrap",
-                  textOverflow: "ellipsis",
+                  border: "1px solid black",
+                }}
+              >
+                {row.created}
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.name}
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.url}
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.terrain}
+              </TableCell>
+              <TableRow
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-around",
+                  height: "100%",
+                  border: "1px solid black",
                 }}
               >
                 <TableCell
-                  component="th"
-                  id={id.toString()}
-                  scope="row"
                   sx={{
-                    border: "1px solid black",
+                    borderRight: "1px solid black",
+                    width: "50%",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                    display: "block",
                   }}
                 >
-                  {index + 1}
+                  {row.climate}
                 </TableCell>
                 <TableCell
                   sx={{
-                    border: "1px solid black",
+                    display: "block",
+                    width: "50%",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
                   }}
                 >
-                  {row.name}
+                  {row.gravity}
                 </TableCell>
-                <TableCell
-                  sx={{
-                    border: "1px solid black",
-                  }}
-                >
-                  {row.url}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    border: "1px solid black",
-                  }}
-                >
-                  {row.terrain}
-                </TableCell>
-                <TableRow
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-around",
-                    height: "100%",
-                    border: "1px solid black",
-                  }}
-                >
-                  <TableCell
-                    sx={{
-                      borderRight: "1px solid black",
-                      width: "50%",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      textOverflow: "ellipsis",
-                      display: "block",
-                    }}
-                  >
-                    {row.climate}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      display: "block",
-                      width: "50%",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {row.gravity}
-                  </TableCell>
-                </TableRow>
+              </TableRow>
 
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.diameter}
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.edited}
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.orbital_period}
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.rotation_period}
+              </TableCell>
+
+              <TableRow
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-around",
+                  height: "100%",
+                  border: "1px solid black",
+                }}
+              >
                 <TableCell
                   sx={{
-                    border: "1px solid black",
-                  }}
-                >
-                  {row.diameter}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    border: "1px solid black",
+                    borderRight: "1px solid black",
+                    width: "50%",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                    display: "block",
                   }}
                 >
                   {row.population}
                 </TableCell>
                 <TableCell
                   sx={{
-                    border: "1px solid black",
+                    display: "block",
+                    width: "50%",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
                   }}
                 >
-                  {row.orbital_period}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    border: "1px solid black",
-                  }}
-                >
-                  {row.rotation_period}
-                </TableCell>
-
-                <TableRow
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-around",
-                    height: "100%",
-                    border: "1px solid black",
-                  }}
-                >
-                  <TableCell
-                    sx={{
-                      borderRight: "1px solid black",
-                      width: "50%",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      textOverflow: "ellipsis",
-                      display: "block",
-                    }}
-                  >
-                    {row.gravity}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      display: "block",
-                      width: "50%",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {row.terrain}
-                  </TableCell>
-                </TableRow>
-
-                <TableCell
-                  sx={{
-                    border: "1px solid black",
-                  }}
-                >
-                  {row.climate}
+                  {row.population}
                 </TableCell>
               </TableRow>
-            );
-          })}
+
+              <TableCell
+                sx={{
+                  border: "1px solid black",
+                }}
+              >
+                {row.films[0]}
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </>
   );
