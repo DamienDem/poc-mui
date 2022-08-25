@@ -1,3 +1,4 @@
+import { Padding } from "@mui/icons-material";
 import {
   TableCell,
   TableHead,
@@ -120,13 +121,17 @@ const HeaderTable = (props: TableProps) => {
       <ToggleButtonGroup
       value={columnToDisplay}
       onChange={displayHandler}
+      
+      sx={{display: "flex", margin:'2%'}}
       >
         {headCells.map((cell) => {
           
           return (
             <ToggleButton
               value={cell}
-              key={cell.label}
+              key={cell.label} 
+              style={{border:'1px solid black', borderRadius:'5%', margin:'2%', lineHeight: '1rem'}}
+            
             >
               {" "}
               {cell.label}
@@ -143,32 +148,35 @@ const HeaderTable = (props: TableProps) => {
             if (headCell.subsection) {
               return (
                 <TableCell
-                  sx={{
+                  style={{
                     border: "1px solid black",
-                    padding: "0",
+                    padding:0 ,
+                    display:'flex',
+                    flexDirection:'column',
+                    textAlign:'center',
+                    height:'100%'
                   }}
                   key={headCell.id}
                 >
-                  <TableRow sx={{ display: "flex", justifyContent: "center" }}>
+                  <TableRow >
                     {headCell.label}
                   </TableRow>
                   <TableRow
-                    sx={{
+                    style={{
                       display: "flex",
                       width: "100%",
+                      height:'100%'
                     }}
                   >
                     {headCell.subsection.map((subsection, index) => {
                       return (
                         <TableCell
-                          sx={{
+                          style={{
                             border: "1px solid black",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
                             width: "50%",
-                            height: "100%",
-                            minHeight: "95px",
+                            borderWidth: '1px 1px 0 1px',
+                            padding:'10%',
+                            height:'100%'
                           }}
                           key={index}
                         >
